@@ -1,0 +1,32 @@
+# Bozza Archive API
+
+Bozza Archive is a long-term memory system for AI conversations and knowledge.
+
+## REST API
+
+Base URL: https://api.bozza.au
+
+### Endpoints
+
+- POST /chat/log - Log chat conversations
+- POST /chat/search - Search through chat history
+- GET /chat/{chat_id} - Retrieve specific chat
+- DELETE /chat/{chat_id} - Delete chat and associated data
+
+## MCP Server
+
+MCP Server URL: https://bozza-mcp.bozza.workers.dev/sse
+
+### Tools
+
+- search: Search through chat history
+- fetch: Retrieve specific chat or message
+- log_chat: Log new conversations
+- delete_chat: Remove chats
+
+## Safety
+
+- No highly sensitive PII should be stored
+- All data is encrypted at rest
+- Users can delete their data at any time
+- Data is retained for learning purposes only

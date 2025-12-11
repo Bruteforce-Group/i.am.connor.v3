@@ -1,0 +1,29 @@
+name = "bozza-api"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+
+[vars]
+ENVIRONMENT = "production"
+
+# D1 Database binding
+[[d1_databases]]
+binding = "CHAT_DB"
+database_name = "chat_logs"
+database_id = "your_d1_database_id_here"
+
+# Vectorize index binding
+[[vectorize]]
+binding = "CHAT_INDEX"
+index_name = "chat-index"
+
+# Workers AI binding
+[ai]
+binding = "AI"
+
+# CORS configuration
+[cors]
+allowed_origins = ["*"]
+allow_credentials = false
+allow_headers = ["*"]
+allow_methods = ["GET", "POST", "DELETE", "OPTIONS"]
+max_age = 86400

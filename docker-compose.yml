@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  connor-db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: connor
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-connor_password}
+      POSTGRES_DB: connor
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+      - ./apps/connor-core/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U connor -d connor"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  connor-core:
+    build:
+      context: .
+      dockerfile: apps/connor-core/Dockerfile
+    depends_on:
+      connor-db:
+        condition: service_healthy
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - CLOUDFLARE_API_BASE=${CLOUDFLARE_API_BASE:-https://api.bozza.au}
+      - CLOUDFLARE_MCP_URL=${CLOUDFLARE_MCP_URL:-https://bozza-mcp.bozza.workers.dev/sse}
+      - DATABASE_URL=postgres://connor:${POSTGRES_PASSWORD:-connor_password}@connor-db:5432/connor
+      - USE_OLLAMA_OFFLINE=${USE_OLLAMA_OFFLINE:-false}
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - OLLAMA_MODEL=${OLLAMA_MODEL:-llama3}
+      - AGENT_VOICE=${AGENT_VOICE:-alloy}
+      - AGENT_MODEL=${AGENT_MODEL:-gpt-4o-realtime-preview}
+      - COMPUTER_USE_ENABLED=${COMPUTER_USE_ENABLED:-true}
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/app/data
+    command: ["npm", "run", "start"]
+
+  ollama:
+    image: ollama/ollama:latest
+    volumes:
+      - ./data/ollama:/root/.ollama
+    ports:
+      - "11434:11434"
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+    profiles:
+      - with-ollama

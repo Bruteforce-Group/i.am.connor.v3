@@ -25,6 +25,12 @@ services:
     depends_on:
       connor-db:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - CLOUDFLARE_API_BASE=${CLOUDFLARE_API_BASE:-https://api.bozza.au}
@@ -50,5 +56,11 @@ services:
       - "11434:11434"
     environment:
       - OLLAMA_HOST=0.0.0.0
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
     profiles:
       - with-ollama
